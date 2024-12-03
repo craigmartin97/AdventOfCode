@@ -2,9 +2,9 @@
 
 namespace AdventOfCode._2024._1;
 
-public sealed class DayOne
+public sealed class PartTwo
 {
-    public int Execute(IEnumerable<int> listOne, IEnumerable<int> listTwo)
+    public long Execute(IEnumerable<int> listOne, IEnumerable<int> listTwo)
     {
         ArgumentNullException.ThrowIfNull(listOne, nameof(listOne));
         ArgumentNullException.ThrowIfNull(listTwo, nameof(listTwo));
@@ -17,17 +17,23 @@ public sealed class DayOne
             throw new InvalidOperationException("The two lists are not the same length");
         }
 
-        listOneArr = listOneArr.Sort();
-        listTwoArr = listTwoArr.Sort();
+        var two= Frequency(listTwoArr.GroupBy(x => x));
 
-        int sum = 0;
-        for (int i = 0; i < listOneArr.Length; i++)
+        long sum = 0;
+        foreach (var i in listOneArr)
         {
-            int smallestFromListOne = listOneArr[i];
-            int smallestFromListTwo = listTwoArr[i];
-            sum += Math.Abs(smallestFromListTwo - smallestFromListOne);
+            if (two.TryGetValue(i, out long v))
+            {
+                sum += (i * v);
+            }
         }
 
         return sum;
+    }
+
+    private static Dictionary<int, long> Frequency(IEnumerable<IGrouping<int, int>> group)
+    {
+        var groupArr = group.ToArray();
+        return groupArr.ToDictionary<IGrouping<int, int>, int, long>(g => g.Key, g => g.Count());
     }
 }

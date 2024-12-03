@@ -2,13 +2,13 @@
 
 namespace AdventOfCode.UnitTests._2024._1;
 
-public sealed class DayOneTests
+public sealed class PartTwoTests
 {
     [Fact]
     public void Execute_WithExampleData_ExpectedSumToBeEleven()
     {
         // Arrange
-        DayOne dayOne = new();
+        PartTwo partTwo = new();
 
         int[] listOne =
         {
@@ -20,9 +20,9 @@ public sealed class DayOneTests
         };
 
         // Act
-        int sum = dayOne.Execute(listOne, listTwo);
+        long sum = partTwo.Execute(listOne, listTwo);
 
         // Assert
-        Assert.Equal(11, sum);
+        Assert.Equal(31, sum);
     }
 }

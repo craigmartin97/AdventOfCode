@@ -3,13 +3,13 @@ using AdventOfCode.Utilities;
 
 namespace AdventOfCode.IntegrationTests._2024._1;
 
-public sealed class DayOneTests
+public sealed class PartOneTests
 {
     [Fact]
-    public void Execute_WithExampleData_ExpectedSumToBe2031679()
+    public void Execute_WithExampleData_ExpectedSumToBe11()
     {
         // Arrange
-        DayOne dayOne = new();
+        PartOne dayOne = new();
 
         var fileParsed = TextFileParser<int>.ParseFile("E:\\Projects\\AdventOfCode\\AdventOfCode\\Inputs\\2024\\1\\test.txt",
             new[] { ' ', '\t' }, int.Parse);
