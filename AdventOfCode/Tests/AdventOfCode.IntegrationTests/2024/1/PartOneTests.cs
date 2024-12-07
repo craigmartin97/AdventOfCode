@@ -11,7 +11,7 @@ public sealed class PartOneTests
         // Arrange
         PartOne dayOne = new();
 
-        var fileParsed = TextFileParser<int>.ParseFile("E:\\Projects\\AdventOfCode\\AdventOfCode\\Inputs\\2024\\1\\test.txt",
+        var fileParsed = TextFileParser<int>.ParseIntoSeparateColumns(FilePathHelper.GetFilePath(1),
             new[] { ' ', '\t' }, int.Parse);
 
         // Act
