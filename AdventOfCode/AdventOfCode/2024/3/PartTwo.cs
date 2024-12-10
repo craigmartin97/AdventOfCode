@@ -2,7 +2,7 @@
 
 namespace AdventOfCode._2024._3;
 
-public class PartTwo
+public sealed class PartTwo
 {
     public int Sum(string input)
     {

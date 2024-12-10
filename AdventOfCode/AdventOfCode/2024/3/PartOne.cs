@@ -43,7 +43,7 @@ public sealed class PartOne
     {
         int ans = 0;
 
-        // Regex pattern to match "mul(…), do(), and don't()"
+        // Regex pattern to match "mul(…)
         const string pattern = @"mul\([0-9]+,[0-9]+\)";
         var matches = Regex.Matches(input, pattern);
 
