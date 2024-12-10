@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace AdventOfCode._2024._4;
+﻿namespace AdventOfCode._2024._4;
 
 public sealed class PartOne
 {
@@ -22,16 +20,14 @@ public sealed class PartOne
         {
             for (int j = 0; j < columns; j++)
             {
-                if (grid[i, j] == word[0])
+                if (grid[i, j] != word[0]) continue;
+                for (int d = 0; d < _directions.GetLength(0); d++)
                 {
-                    for (int d = 0; d < _directions.GetLength(0); d++)
+                    int dx = _directions[d, 0];
+                    int dy = _directions[d, 1];
+                    if (DepthFirstSearch(grid, word, i, j, 0, dx, dy))
                     {
-                        int dx = _directions[d, 0];
-                        int dy = _directions[d, 1];
-                        if (DepthFirstSearch(grid, word, i, j, 0, dx, dy))
-                        {
-                            totalXmasOccurrences++;
-                        }
+                        totalXmasOccurrences++;
                     }
                 }
             }
@@ -40,7 +36,7 @@ public sealed class PartOne
         return totalXmasOccurrences;
     }
 
-    private bool DepthFirstSearch(char[,] grid, string word,
+    private static bool DepthFirstSearch(char[,] grid, string word,
         int rowIndex, int columnIndex, int wordPositionIndex, int dx, int dy)
     {
         if (wordPositionIndex == word.Length)
