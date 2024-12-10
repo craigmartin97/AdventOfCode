@@ -7,7 +7,7 @@ Console.WriteLine("Running solution!");
 
 // int day = DateTime.Now.Day; // change if doing puzzle that isn't today's
 const int day = 4;
-string fileLocation = FilePathHelper.GetFilePath(day, FileType.Test);
+string fileLocation = FilePathHelper.GetFilePath(day, FileType.Real);
 
 var input = File.ReadAllLines(fileLocation);
 PartOne part = new();

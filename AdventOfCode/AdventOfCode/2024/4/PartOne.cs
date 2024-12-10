@@ -22,9 +22,17 @@ public sealed class PartOne
         {
             for (int j = 0; j < columns; j++)
             {
-                if (grid[i, j] == word[0] && DepthFirstSearch(grid, word, i, j, 0))
+                if (grid[i, j] == word[0])
                 {
-                    totalXmasOccurrences++;
+                    for (int d = 0; d < _directions.GetLength(0); d++)
+                    {
+                        int dx = _directions[d, 0];
+                        int dy = _directions[d, 1];
+                        if (DepthFirstSearch(grid, word, i, j, 0, dx, dy))
+                        {
+                            totalXmasOccurrences++;
+                        }
+                    }
                 }
             }
         }
@@ -33,35 +41,19 @@ public sealed class PartOne
     }
 
     private bool DepthFirstSearch(char[,] grid, string word,
-        int rowIndex, int columnIndex, int wordPositionIndex)
+        int rowIndex, int columnIndex, int wordPositionIndex, int dx, int dy)
     {
         if (wordPositionIndex == word.Length)
             return true;
 
         if (rowIndex < 0 || rowIndex >= grid.GetLength(0) ||
-            columnIndex < 0 || columnIndex > grid.GetLength(1) ||
+            columnIndex < 0 || columnIndex >= grid.GetLength(1) ||
             grid[rowIndex, columnIndex] != word[wordPositionIndex])
         {
             return false;
         }
 
-        var temp = grid[rowIndex, columnIndex];
-        grid[rowIndex, columnIndex] = '#';
-
-        bool found = false;
-        for (int i = 0; i < _directions.GetLength(0); i++)
-        {
-            int dx = _directions[i, 0];
-            int dy = _directions[i, 1];
-            if (DepthFirstSearch(grid, word, rowIndex + dx, columnIndex + dy, wordPositionIndex + 1))
-            {
-                found = true; 
-                break;
-            }
-        }
-
-        grid[rowIndex, columnIndex] = temp;
-
-        return found;
+        // Move in the current direction
+        return DepthFirstSearch(grid, word, rowIndex + dx, columnIndex + dy, wordPositionIndex + 1, dx, dy);
     }
 }
