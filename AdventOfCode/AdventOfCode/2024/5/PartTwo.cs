@@ -10,7 +10,8 @@ public sealed class PartTwo : ICommand<int>
 
         var (rulesStr, updatesStr) = ParseFile();
 
-        List<(int, int)> rules = ConvertRulesToTuples(rulesStr);
+        // Use a HashSet for efficient rule lookup
+        HashSet<(int, int)> rules = ConvertRulesToHashSet(rulesStr);
         var updates = updatesStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
         List<int> currentUpdates = new();
@@ -20,9 +21,10 @@ public sealed class PartTwo : ICommand<int>
 
             if (!res.Item1 && currentUpdates.Count % 2 != 0)
             {
-                HandleMismatchRecursive(currentUpdates, res.Item2, res.Item3, rules);
+                HandleMismatch(currentUpdates, rules);
 
-                int middle = currentUpdates.ElementAt(currentUpdates.Count / 2);
+                // Calculate and add the middle element
+                int middle = currentUpdates[currentUpdates.Count / 2];
                 total += middle;
             }
 
@@ -37,90 +39,61 @@ public sealed class PartTwo : ICommand<int>
         string allText = File.ReadAllText(FilePathHelper.GetFilePath(5, FileType.Real));
         string[] allData = allText.Split("\r\n\r\n", StringSplitOptions.RemoveEmptyEntries);
         if (allData.Length != 2)
-            throw new InvalidOperationException("unable to process");
-        string rules = allData[0];
-        string updates = allData[1];
-        return (rules, updates);
+            throw new InvalidOperationException("Unable to process");
+        return (allData[0], allData[1]);
     }
 
-    private static List<(int, int)> ConvertRulesToTuples(string rulesStr)
+    private static HashSet<(int, int)> ConvertRulesToHashSet(string rulesStr)
     {
-        List<(int, int)> tuples = new List<(int, int)>();
+        HashSet<(int, int)> rulesOutput = new();
         string[] rules = rulesStr.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
         foreach (string rule in rules)
         {
             string[] split = rule.Split('|');
-            if (split.Length != 2)
-                continue;
-            tuples.Add((int.Parse(split[0]), int.Parse(split[1])));
+            if (split.Length == 2)
+            {
+                rulesOutput.Add((int.Parse(split[0]), int.Parse(split[1])));
+            }
         }
-        return tuples;
+        return rulesOutput;
     }
 
-    private static (bool, int, int) IsMatch(string update, List<int> currentUpdates, 
-        List<(int, int)> rules)
+    private static (bool, int, int) IsMatch(string update, List<int> currentUpdates, HashSet<(int, int)> rules)
     {
         var u = update.Split(',', StringSplitOptions.RemoveEmptyEntries);
         currentUpdates.AddRange(u.Select(int.Parse));
 
-        bool match = true;
-        int i;
-        int j = 0;
+        return CheckRules(currentUpdates, rules);
+    }
 
-        for (i = 0; i < currentUpdates.Count - 1; i++)
+    private static (bool, int, int) CheckRules(List<int> currentUpdates, HashSet<(int, int)> rules)
+    {
+        // Check pairs in currentUpdates against rules
+        for (int i = 0; i < currentUpdates.Count - 1; i++)
         {
-            int x = currentUpdates.ElementAt(i);
-
-            for (j = i + 1; j < currentUpdates.Count; j++)
+            for (int j = i + 1; j < currentUpdates.Count; j++)
             {
-                int y = currentUpdates.ElementAt(j);
-                match = rules.Exists(tuple => tuple.Item1 == x && tuple.Item2 == y);
-                if (!match)
+                if (!rules.Contains((currentUpdates[i], currentUpdates[j])))
                 {
-                    return (match, i, j);
+                    return (false, i, j);
                 }
             }
         }
-
-        return (match, i ,j);
+        return (true, -1, -1); // Match found
     }
 
-    private static (bool, int, int) IsMatch(IReadOnlyCollection<int> currentUpdates, List<(int, int)> rules)
+    private static void HandleMismatch(List<int> currentUpdates, HashSet<(int, int)> rules)
     {
-        bool match = true;
-        int i;
-        int j = 0;
-
-        for (i = 0; i < currentUpdates.Count - 1; i++)
+        while (true)
         {
-            int x = currentUpdates.ElementAt(i);
+            var res = CheckRules(currentUpdates, rules);
 
-            for (j = i + 1; j < currentUpdates.Count; j++)
-            {
-                int y = currentUpdates.ElementAt(j);
-                match = rules.Exists(tuple => tuple.Item1 == x && tuple.Item2 == y);
-                if (!match)
-                {
-                    return (match, i, j);
-                }
-            }
-        }
+            if (res.Item1) // If it matches, exit the loop
+                break;
 
-        return (match, i, j);
-    }
-
-    private static void HandleMismatchRecursive(List<int> currentUpdates, int index1, int index2, List<(int, int)> rules)
-    {
-        // Swap elements
-        (currentUpdates[index1], currentUpdates[index2]) = (currentUpdates[index2], currentUpdates[index1]);
-
-        // Re-check if the list matches the rules
-        var res = IsMatch(currentUpdates, rules);
-
-        // If still no match, call the method recursively
-        if (!res.Item1)
-        {
-            HandleMismatchRecursive(currentUpdates, res.Item2, res.Item3, rules);
+            // Swap mismatched elements
+            (currentUpdates[res.Item2], currentUpdates[res.Item3]) =
+                (currentUpdates[res.Item3], currentUpdates[res.Item2]);
         }
     }
 }
